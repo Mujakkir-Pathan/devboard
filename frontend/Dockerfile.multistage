@@ -1,0 +1,62 @@
+# syntax=docker/dockerfile:1
+# ---------------------------------------------------------------------------
+# Multi-stage frontend image — no nginx, smaller than the single-stage build.
+#
+# The single-stage Dockerfile keeps the ENTIRE Node toolchain in the final
+# image (vite, vitest, testing-library, tailwind, postcss, all of node_modules)
+# even though, once the app is built, you only need enough to *serve* it.
+#
+# This file splits the work in two:
+#   1. build  — install everything and produce the static files in /app/dist
+#   2. runtime — a fresh, small image that only installs `vite` and serves
+#                the prebuilt files with `vite preview` (which also proxies
+#                /api → backend, so we still don't need nginx).
+#
+# Result: the build-only and test-only dependencies never reach the final image.
+# Build it explicitly with:
+#   docker build -f frontend/Dockerfile.multistage -t devboard-frontend ./frontend
+# ---------------------------------------------------------------------------
+
+# ---- Stage 1: build the static site ----
+FROM node:20-alpine AS build
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build          # outputs to /app/dist
+
+# ---- Stage 2: small runtime that just serves the build ----
+FROM node:20-alpine AS runtime
+WORKDIR /app
+
+# Non-root user.
+RUN addgroup -S app && adduser -S -G app app
+
+# Copy ONLY the built files from stage 1 — none of the source or node_modules.
+COPY --from=build /app/dist ./dist
+
+# `vite preview` is all we need to serve the build and proxy /api. Installing
+# just vite (not the full dev dependency tree) is what keeps this image small.
+RUN npm install -g vite@5 && npm cache clean --force
+
+# A tiny preview-only config: serve the static build and forward /api to the
+# backend. (No plugins/imports needed here — those were only for the build.)
+COPY <<'EOF' /app/vite.config.js
+export default {
+  preview: {
+    proxy: {
+      '/api': {
+        target: 'http://backend:8080',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api/, ''),
+      },
+    },
+  },
+};
+EOF
+
+RUN chown -R app:app /app
+USER app
+
+EXPOSE 4173
+CMD ["vite", "preview", "--host", "0.0.0.0", "--port", "4173"]

@@ -1,4 +1,4 @@
-FROM dhi.io/golang:1-alpine AS builder
+FROM golang:1.26 AS builder
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 go build -o devboard-backend .
 
-FROM dhi.io/golang:1-alpine
+FROM golang:1.26-alpine
 
 WORKDIR /app
 
@@ -18,9 +18,9 @@ COPY --from=builder /app/devboard-backend ./devboard-backend
 RUN chmod +x ./devboard-backend
 
 # DHI image runs as nonroot by default
-USER nonroot
+USER nobody
 
 EXPOSE 8080
 
 # Use exec form for proper signal handling
-ENTRYPOINT ["./devboard-backend"]
+CMD ["./devboard-backend"]

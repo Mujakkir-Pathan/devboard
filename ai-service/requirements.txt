@@ -21,8 +21,8 @@ prometheus-client==0.20.0
 # We use the HTTP/protobuf exporter rather than gRPC on purpose: it avoids
 # pulling grpcio (a ~40 MB C-extension wheel) into the image, and OTLP/HTTP is
 # curl-able, which makes "is anything arriving?" a much shorter conversation.
-opentelemetry-distro==0.65b0
-opentelemetry-exporter-otlp-proto-http==1.44.0
-opentelemetry-instrumentation-flask==0.65b0
-opentelemetry-instrumentation-httpx==0.65b0
-opentelemetry-instrumentation-logging==0.65b0
+opentelemetry-distro==0.66b1
+opentelemetry-exporter-otlp-proto-http==1.45.1
+opentelemetry-instrumentation-flask==0.66b1
+opentelemetry-instrumentation-httpx==0.66b1
+opentelemetry-instrumentation-logging==0.66b1

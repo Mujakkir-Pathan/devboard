@@ -24,8 +24,8 @@ postgres:
       memory: 256Mi
 backend:
   image:
-    repository: trainwithshubham/devboard-backend
-    tag: sha-4945e5b
+    repository: mujakkirpathan/devboard-backend
+    tag: sha-444aea8
     pullPolicy: IfNotPresent
   replicas: 1
   serviceName: backend
@@ -39,8 +39,8 @@ backend:
       memory: 128Mi
 frontend:
   image:
-    repository: trainwithshubham/devboard-frontend
-    tag: sha-4945e5b
+    repository: mujakkirpathan/devboard-frontend
+    tag: sha-444aea8
     pullPolicy: IfNotPresent
   replicas: 1
   containerPort: 4173
@@ -60,8 +60,8 @@ frontend:
 ai:
   enabled: true
   image:
-    repository: trainwithshubham/devboard-ai-service
-    tag: sha-4945e5b
+    repository: mujakkirpathan/devboard-ai-service
+    tag: sha-444aea8
     pullPolicy: IfNotPresent
   replicas: 1
   serviceName: ai-service

@@ -18,7 +18,7 @@ services:
 
   backend:
     build: ./backend
-    image: trainwithshubham/devboard-backend:${IMAGE_TAG:-latest}
+    image: mujakkirpathan/devboard-backend:${IMAGE_TAG:-latest}
     environment:
       PORT: "${BACKEND_PORT}"
       POSTGRES_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
@@ -30,7 +30,7 @@ services:
 
   frontend:
     build: ./frontend
-    image: trainwithshubham/devboard-frontend:${IMAGE_TAG:-latest}
+    image: mujakkirpathan/devboard-frontend:${IMAGE_TAG:-latest}
     depends_on:
       - backend
     ports:

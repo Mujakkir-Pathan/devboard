@@ -42,3 +42,5 @@ terraform/backend.hcl
 #   .terraform.lock.hcl   provider checksums. Committing it is the whole point;
 #                         it is Terraform's package-lock.json.
 #   terraform.tfvars      teaching defaults with no secrets in them.
+terraform/charts/
+terraform/*.bak

@@ -1,6 +1,5 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../../tailwind.config.js";
 
 :root {
   --db-accent:        #7F77DD;
@@ -67,10 +66,6 @@ body {
            px-3 text-[13px] placeholder-ink-400 outline-none transition
            focus:border-accent focus:shadow-focus;
   }
-  .db-btn {
-    @apply inline-flex items-center justify-center gap-2 h-9 rounded px-4
-           text-[13px] font-medium transition select-none whitespace-nowrap;
-  }
   .db-btn-primary   { @apply db-btn bg-accent text-white hover:bg-accent-hover focus:shadow-focus
                        shadow-[0_1px_0_0_rgba(0,0,0,0.04),inset_0_-1px_0_0_rgba(0,0,0,0.08)]; }
   .db-btn-secondary { @apply db-btn bg-white dark:bg-[#1c1c1f] border border-ink-100 text-ink-950
@@ -82,6 +77,14 @@ body {
   .db-chip {
     @apply inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-[3px] rounded-[5px];
   }
+}
+
+/* Registered as a v4 utility so @apply in the button variants above can
+   resolve it — plain component classes are not apply-able in Tailwind v4.
+   It is never used on its own in JSX (Button.jsx only uses the variants). */
+@utility db-btn {
+  @apply inline-flex items-center justify-center gap-2 h-9 rounded px-4
+         text-[13px] font-medium transition select-none whitespace-nowrap;
 }
 
 /* SSE streaming text cursor */

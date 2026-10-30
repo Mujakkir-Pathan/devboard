@@ -7,21 +7,47 @@
 version: 2
 
 updates:
+  # Production-style grouping: minor/patch updates are batched into one PR
+  # (and one branch) per ecosystem so the branch list stays readable, while
+  # major updates always get their own PR because they carry breaking changes
+  # and need review on their own. The exception is the opentelemetry groups
+  # below, which always move together regardless of version bump.
   - package-ecosystem: github-actions
     directory: /
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
+    groups:
+      github-actions:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: terraform
     directory: /terraform
     schedule:
       interval: weekly
+    groups:
+      terraform:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: terraform
     directory: /terraform/bootstrap
     schedule:
       interval: monthly
+    groups:
+      terraform-bootstrap:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: gomod
     directory: /backend
@@ -30,16 +56,33 @@ updates:
     groups:
       # The OTel Go modules must move together — mixing SDK and contrib
       # release lines produces build failures that read like your bug.
+      # No update-types filter: majors are grouped too, for the same reason.
       opentelemetry:
         patterns:
           - "go.opentelemetry.io/*"
           - "github.com/XSAM/otelsql"
+      go-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "go.opentelemetry.io/*"
+          - "github.com/XSAM/otelsql"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: npm
     directory: /frontend
     schedule:
       interval: weekly
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 10
+    groups:
+      frontend:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: pip
     directory: /ai-service
@@ -47,10 +90,19 @@ updates:
       interval: weekly
     groups:
       # Same rule as Go: opentelemetry-sdk 1.x pairs with instrumentation 0.xxb0.
-      # Updating one without the other breaks the import chain.
+      # Updating one without the other breaks the import chain, so majors stay
+      # in the group too.
       opentelemetry:
         patterns:
           - "opentelemetry-*"
+      python-dependencies:
+        patterns:
+          - "*"
+        exclude-patterns:
+          - "opentelemetry-*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: docker
     directories:
@@ -59,3 +111,10 @@ updates:
       - /ai-service
     schedule:
       interval: weekly
+    groups:
+      docker:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"

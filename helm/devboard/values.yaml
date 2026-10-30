@@ -25,7 +25,7 @@ postgres:
 backend:
   image:
     repository: mujakkirpathan/devboard-backend
-    tag: sha-5615539
+    tag: sha-45df65a
     pullPolicy: IfNotPresent
   replicas: 1
   serviceName: backend
@@ -40,7 +40,7 @@ backend:
 frontend:
   image:
     repository: mujakkirpathan/devboard-frontend
-    tag: sha-5615539
+    tag: sha-45df65a
     pullPolicy: IfNotPresent
   replicas: 1
   containerPort: 4173
@@ -61,7 +61,7 @@ ai:
   enabled: true
   image:
     repository: mujakkirpathan/devboard-ai-service
-    tag: sha-5615539
+    tag: sha-45df65a
     pullPolicy: IfNotPresent
   replicas: 1
   serviceName: ai-service

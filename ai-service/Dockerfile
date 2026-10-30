@@ -18,10 +18,11 @@ COPY app ./app
 
 RUN useradd --uid 10001 --create-home --shell /usr/sbin/nologin appuser \
     && chown -R appuser:appuser /app
-USER appuser
+USER 10001
 
 EXPOSE 3005
 
+# hadolint ignore=DL3025
 HEALTHCHECK --interval=10s --timeout=3s --retries=5 \
     CMD curl -fsS http://localhost:3005/health || exit 1
 

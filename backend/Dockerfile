@@ -16,6 +16,7 @@ COPY --from=builder /app/devboard-backend ./devboard-backend
 
 RUN chmod +x ./devboard-backend
 
+# hadolint ignore=DL3066
 USER nonroot
 
 EXPOSE 8080

@@ -22,6 +22,16 @@ export function CommandBar() {
   const [open, setOpen]       = useState(false);
   const [cursor, setCursor]   = useState(0);
   const [isMac]               = useState(() => /Mac|iPhone|iPad/.test(navigator.platform));
+  const [prevQuery, setPrevQuery] = useState(query);
+
+  // Clear stale results during render when the query drops below the
+  // minimum search length (https://react.dev/learn/you-might-not-need-an-effect).
+  if (prevQuery !== query) {
+    setPrevQuery(query);
+    if (query.trim().length < 2 && results.length > 0) {
+      setResults([]);
+    }
+  }
 
   // Cmd/Ctrl+K focus.
   useEffect(() => {
@@ -38,10 +48,7 @@ export function CommandBar() {
 
   // Debounced search.
   useEffect(() => {
-    if (query.trim().length < 2) {
-      setResults([]);
-      return;
-    }
+    if (query.trim().length < 2) return;
     const timer = setTimeout(async () => {
       try {
         const { results: r } = await api.get(

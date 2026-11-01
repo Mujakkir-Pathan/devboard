@@ -1,4 +1,3 @@
-import { useMemo } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   IconLayoutDashboard, IconCheck, IconChartBar, IconBell,
@@ -22,7 +21,7 @@ const SOON = [
 export function Sidebar() {
   const { data } = useProjects();
   const projects = data?.projects || [];
-  const syncedAt = useMemo(() => new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), [data]);
+  const syncedAt = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   return (
     <aside className="w-[228px] shrink-0 border-r border-ink-100 dark:border-white/10

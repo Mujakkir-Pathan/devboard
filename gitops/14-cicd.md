@@ -7,7 +7,7 @@ that commit and deploys. CI never touches the cluster.
 ```
 push code to mega-project ─▶ GitHub Actions (DevSecOps)
    gates: lint · tests · gitleaks · dep-scan · trivy · sonar
-      └▶ build & push  trainwithshubham/devboard-{backend,frontend,ai-service}:sha-<short>
+      └▶ build & push  mujakkirpathan/devboard-{backend,frontend,ai-service}:sha-<short>
            └▶ gitops-bump: write that tag into k8s/ + helm/values.yaml, commit back
                 └▶ ArgoCD (watches mega-project) syncs to EKS
 push manifest-only ─▶ no build (path filter) ─▶ ArgoCD syncs
@@ -34,7 +34,7 @@ message carries `[skip ci]`. Three independent safety nets.
 
 | Kind | Name | Value |
 |------|------|-------|
-| Variable | `DOCKERHUB_USERNAME` | **`trainwithshubham`** (must match the image owner in the manifests) |
+| Variable | `DOCKERHUB_USERNAME` | **`mujakkirpathan`** (must match the image owner in the manifests) |
 | Secret | `DOCKERHUB_TOKEN` | Docker Hub access token with **Read & Write** |
 | Secret | `SONAR_TOKEN` | a SonarCloud token |
 | Secret | `SONAR_HOST_URL` | `https://sonarcloud.io` |

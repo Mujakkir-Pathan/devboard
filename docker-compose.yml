@@ -36,5 +36,21 @@ services:
     ports:
       - "${FRONTEND_HOST_PORT}:4173"   # vite preview serves on 4173 inside the container
 
+  ai-service:
+    build: ./ai-service
+    image: mujakkirpathan/devboard-ai-service:${IMAGE_TAG:-latest}
+    environment:
+      PORT: "3005"
+      TASK_SERVICE_URL: "http://backend:8080"
+      MODEL_API_BASE: "${MODEL_API_BASE:-http://host.docker.internal:11434/v1}"
+      MODEL_NAME: "${MODEL_NAME:-llama3.2:1b}"
+      MODEL_API_KEY: "${MODEL_API_KEY:-}"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # reach Ollama running on the host
+    depends_on:
+      - backend
+    ports:
+      - "${AI_HOST_PORT:-3005}:3005"   # direct curl/debug; the UI uses the /api/ai proxy
+
 volumes:
   pgdata:

@@ -34,6 +34,9 @@ smoke:
 	@echo "backend health:"
 	curl -s http://localhost:8081/health
 	@echo ""
+	@echo "ai-service health:"
+	curl -s http://localhost:3005/health
+	@echo ""
 	@echo "frontend page:"
 	curl -s -o /dev/null -w "  HTTP %{http_code}\n" http://localhost:8080/
 	@echo "tasks from the database:"

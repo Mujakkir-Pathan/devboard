@@ -1,0 +1,6 @@
+# GitLeaks triaged findings — one fingerprint per line.
+#
+# k8s/secrets.yml was removed from the codebase, but it still exists in git
+# history (commit b297367). Its "secret" is base64("devboard") — the public
+# demo password this repo uses everywhere — not a real credential.
+b297367af5ba730ba57fde0dbaeed03cdb525a80:k8s/secrets.yml:kubernetes-secret-yaml:2

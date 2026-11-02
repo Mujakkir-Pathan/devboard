@@ -1,31 +1,31 @@
 [![DevSecOps](https://github.com/Mujakkir-Pathan/devboard/actions/workflows/devsecops.yml/badge.svg?branch=mega-project)](https://github.com/Mujakkir-Pathan/devboard/actions/workflows/devsecops.yml)
 [![Terraform Checks](https://github.com/Mujakkir-Pathan/devboard/actions/workflows/terraform-ci.yml/badge.svg?branch=mega-project)](https://github.com/Mujakkir-Pathan/devboard/actions/workflows/terraform-ci.yml)
 
-# DevBoard — three-tier ticket tracking with an AI assistant
+# DevBoard: three-tier ticket tracking with an AI assistant
 
 DevBoard is a kanban-style project tracker built as a real three-tier
-application — **React** frontend, **Go** API, **Postgres** database — plus an
-**AI assistant** microservice that streams project summaries and answers
+application, with a **React** frontend, **Go** API, and **Postgres** database,
+plus an **AI assistant** microservice that streams project summaries and answers
 grounded in your actual tasks.
 
 It runs locally with one command, ships a full **DevSecOps CI pipeline**
-(quality gates → SHA-tagged images → GitOps commit), and has a complete
-**GitOps path to AWS EKS** (Terraform + ArgoCD + Envoy Gateway + OpenTelemetry).
+(quality gates, SHA-tagged images, GitOps commit), and has a complete
+**GitOps path to AWS EKS** (Terraform, ArgoCD, Envoy Gateway, OpenTelemetry).
 
 **Highlights**
 
-- 🗂 Kanban boards, task lists, project dashboard, full-text task search
-- 🤖 AI assistant — streaming (SSE) summaries & Q&A grounded in your project's tasks, self-hosted via Ollama
-- ⚡ One-command local setup: `make up` (Docker Compose, no Node/Go/Python/Postgres install needed)
-- 🔒 DevSecOps pipeline: lint, tests, GitLeaks, dependency & image scanning, Sonar, hadolint
-- 🚀 GitOps delivery: CI commits image tags into `k8s/` + `helm/`, ArgoCD syncs to EKS — CI never touches the cluster
-- 📈 Production-shaped EKS guide: Terraform, TLS, AWS Secrets Manager, distributed tracing, Grafana/Loki/Tempo
+- Kanban boards, task lists, project dashboard, full-text task search
+- AI assistant with streaming (SSE) summaries and Q&A grounded in your project's tasks, self-hosted via Ollama
+- One-command local setup with `make up` (Docker Compose, no Node/Go/Python/Postgres install needed)
+- DevSecOps pipeline: lint, tests, GitLeaks, dependency and image scanning, Sonar, hadolint
+- GitOps delivery: CI commits image tags into `k8s/` and `helm/`, ArgoCD syncs to EKS, CI never touches the cluster
+- Production-shaped EKS guide: Terraform, TLS, AWS Secrets Manager, distributed tracing, Grafana/Loki/Tempo
 
 ---
 
 ## Architecture
 
-### Local — Docker Compose
+### Local: Docker Compose
 
 ```mermaid
 flowchart LR
@@ -61,17 +61,17 @@ flowchart TB
     SM["AWS Secrets Manager"] --> ESO
 ```
 
-- **Routing** — one hostname: `/` serves the UI, `/api/ai/*` reaches the
+- **Routing**: one hostname, `/` serves the UI, `/api/ai/*` reaches the
   ai-service, everything else under `/api` hits the backend.
-- **Secrets** — no credentials in Git: AWS Secrets Manager → External Secrets
-  Operator → Kubernetes Secret → backend & Postgres.
-- **Observability** (not shown above) — all three tiers emit OTLP to the
+- **Secrets**: no credentials in Git. AWS Secrets Manager → External Secrets
+  Operator → Kubernetes Secret → backend and Postgres.
+- **Observability** (not shown above): all three tiers emit OTLP to the
   OpenTelemetry Collector → **Tempo** (traces), **Loki** (logs),
-  **Prometheus** (metrics) → **Grafana** dashboards & alerts.
-- **Delivery** — ArgoCD watches this repo (`mega-project`); raw manifests
+  **Prometheus** (metrics) → **Grafana** dashboards and alerts.
+- **Delivery**: ArgoCD watches this repo (`mega-project`). Raw manifests
   (`k8s/`) and a Helm chart (`helm/devboard/`) are two interchangeable paths.
 
-### CI/CD — DevSecOps + GitOps
+### CI/CD: DevSecOps + GitOps
 
 ```mermaid
 flowchart LR
@@ -82,7 +82,7 @@ flowchart LR
     A --> K["EKS<br/>rolling update"]
 ```
 
-CI never talks to the cluster — it only writes to Git. Full walk-through:
+CI never talks to the cluster; it only writes to Git. Full walkthrough:
 [`gitops/14-cicd.md`](gitops/14-cicd.md).
 
 ---
@@ -96,7 +96,7 @@ CI never talks to the cluster — it only writes to Git. Full walk-through:
 | Database | PostgreSQL 16 (schema + seed in `init/postgres/`) |
 | AI | Python 3.12 / Flask, OpenAI-compatible client, Ollama (`llama3.2:1b`), SSE streaming |
 | Local run | Docker Compose + Make |
-| CI | GitHub Actions — `devsecops.yml` orchestrator, reusable workflow jobs |
+| CI | GitHub Actions (`devsecops.yml` orchestrator, reusable workflow jobs) |
 | IaC | Terraform (VPC, EKS, IAM, S3 remote state) |
 | CD | ArgoCD (app-of-apps), Envoy Gateway (Gateway API → NLB), Helm |
 | Secrets | AWS Secrets Manager + External Secrets Operator |
@@ -106,7 +106,7 @@ CI never talks to the cluster — it only writes to Git. Full walk-through:
 
 ## Quick start (local)
 
-**You need:** Docker (with Compose). Nothing else — no Node, Go, Python, or
+**You need:** Docker (with Compose). Nothing else, no Node, Go, Python, or
 Postgres on your machine.
 
 ```bash
@@ -116,7 +116,7 @@ make setup    # creates .env from .env.example (first time only)
 make up       # builds & starts postgres, backend, ai-service, frontend
 ```
 
-Open **http://localhost:8080** — you should see the DevBoard dashboard with
+Open **http://localhost:8080**. You should see the DevBoard dashboard with
 example tasks. (On first load a brief error can appear while the backend
 starts; refresh.)
 
@@ -143,7 +143,7 @@ docker compose up --build
 
 ### The AI assistant locally
 
-The app is fully usable without a model — only the AI chat needs one. To
+The app is fully usable without a model, only the AI chat needs one. To
 enable it, run Ollama on your machine:
 
 ```bash
@@ -162,7 +162,7 @@ model the chat panel shows an error; everything else works.
 
 Run all commands from the repo root. Start the pieces one by the one, the hard
 way, so you can see exactly what Compose does for you later. (This path skips
-`ai-service` — Compose in Part 2 runs it.)
+`ai-service`, but Compose in Part 2 runs it.)
 
 ### Step 1: Create a network
 
@@ -175,7 +175,7 @@ docker network create devboard-net
 ### Step 2: Build the images
 
 Frontend and backend are *our* code, so we build an image for each. Postgres is
-the official image — nothing to build.
+the official image, so there is nothing to build.
 
 ```bash
 docker build -t devboard-frontend ./frontend
@@ -187,7 +187,7 @@ builds are much faster.
 
 ### Step 3: Run the database
 
-Named `postgres` — the exact name the backend looks for. The volume mount loads
+Named `postgres`, the exact name the backend looks for. The volume mount loads
 the example data on first start.
 
 ```bash
@@ -202,7 +202,7 @@ docker run -d --name postgres --network devboard-net \
 
 ### Step 4: Run the backend
 
-`POSTGRES_URL` uses the container name `postgres` — that's how service
+`POSTGRES_URL` uses the container name `postgres`, which is how service
 discovery works on the shared network.
 
 ```bash
@@ -257,7 +257,7 @@ All changeable values live in one file, created from the committed template:
 cp .env.example .env     # or: make setup
 ```
 
-`.env.example` stays in git; your real `.env` is gitignored — secrets never
+`.env.example` stays in git; your real `.env` is gitignored, so secrets never
 get committed.
 
 | Variable | Default | What it controls |
@@ -276,7 +276,7 @@ get committed.
 
 ## Development & tests
 
-Each tier develops independently — Compose can supply the rest:
+Each tier develops independently, and Compose can supply the rest:
 
 ```bash
 # Frontend (hot reload; needs backend on :8080 + ai-service on :3005)
@@ -318,8 +318,8 @@ Quality commands used by CI (run them before pushing):
 ├── .env.example             settings template (copy to .env)
 │
 ├── frontend/                React app (Vite, Tailwind). Serves the UI, proxies /api
-├── backend/                 Go API (Gin) — main.go, tracing.go, tests
-├── ai-service/              Flask AI microservice — SSE streaming, Prometheus metrics
+├── backend/                 Go API (Gin): main.go, tracing.go, tests
+├── ai-service/              Flask AI microservice: SSE streaming, Prometheus metrics
 ├── init/postgres/           schema + seed data, loaded on first database start
 │
 ├── k8s/                     raw Kubernetes manifests (ArgoCD app path #1)
@@ -364,33 +364,33 @@ prefix before proxying.
 | GET    | `/search?q=&project_id=N` | search tasks by title              |
 | GET    | `/health`                 | health check                       |
 
-### ai-service (Python) — via `/api/ai`
+### ai-service (Python), via `/api/ai`
 
 | Method | Path             | What it does                                            |
 | ------ | ---------------- | ------------------------------------------------------- |
 | GET    | `/`              | service index (name, model, endpoints)                  |
 | GET    | `/health`        | health + model name                                     |
 | GET    | `/model/check`   | is the model server reachable / model ready?            |
-| POST   | `/summarise`     | SSE — 4–6 sentence project summary grounded in tasks    |
-| POST   | `/ask`           | SSE — question answering grounded in tasks              |
+| POST   | `/summarise`     | SSE: 4 to 6 sentence project summary grounded in tasks  |
+| POST   | `/ask`           | SSE: question answering grounded in tasks               |
 
 `POST` bodies: `{"project_id": 1}` and, for `/ask`, `{"question": "..."}`.
 
 ---
 
-## CI/CD — DevSecOps + GitOps
+## CI/CD: DevSecOps + GitOps
 
 Pushing to `mega-project` runs
 [`.github/workflows/devsecops.yml`](.github/workflows/devsecops.yml):
 
-1. **Gates (parallel)** — code quality (Checkstyle/ESLint, yamllint, gofmt/vet),
+1. **Gates (parallel)**: code quality (Checkstyle/ESLint, yamllint, gofmt/vet),
    tests (Go, Vitest, Pytest with MySQL/Postgres services), GitLeaks, hadolint,
    dependency & image scanning, Sonar.
-2. **Build & push** — once every gate passes, the three service images are
+2. **Build and push**: once every gate passes, the three service images are
    pushed to Docker Hub tagged with the commit SHA.
-3. **GitOps bump** — new SHA tags are written into `k8s/` and
+3. **GitOps bump**: new SHA tags are written into `k8s/` and
    `helm/devboard/values.yaml` and committed back (`ci: deploy … [skip ci]`).
-   ArgoCD — watching this branch — syncs the change to the cluster.
+   ArgoCD, watching this branch, syncs the change to the cluster.
 
 Full walk-through: [`gitops/14-cicd.md`](gitops/14-cicd.md). The steps below
 configure the secrets the pipeline needs.
@@ -443,10 +443,10 @@ To allow the CI pipeline to build and push images to Docker Hub:
 
 Two entry points, same destination:
 
-- **[`Deploy.md`](Deploy.md)** — flat command-by-command runbook, bare AWS
+- **[`Deploy.md`](Deploy.md)**: flat command-by-command runbook, bare AWS
   account → HTTPS on your own domain.
-- **[`gitops/README.md`](gitops/README.md)** — the 15-chapter guide with the
-  why behind each step, plus the cost model (**~$330/month** — do
+- **[`gitops/README.md`](gitops/README.md)**: the 15-chapter guide with the
+  why behind each step, plus the cost model of about $330/month. Do
   [`gitops/15-cleanup.md`](gitops/15-cleanup.md) when you're done).
 
 ---
@@ -456,7 +456,7 @@ Two entry points, same destination:
 | Symptom | Fix |
 |---------|-----|
 | Page loads, tasks show an error | backend still starting → refresh, or `make logs` |
-| AI chat returns an error | no model running — start Ollama & pull `llama3.2:1b`, or check `MODEL_API_BASE` in `.env` |
+| AI chat returns an error | no model running, start Ollama and pull `llama3.2:1b`, or check `MODEL_API_BASE` in `.env` |
 | `port is already allocated` | another service owns the port → change `*_HOST_PORT` in `.env`, `make down && make up` |
 | Database in a weird state | `make reset` (drops the volume, re-seeds) |
 | Compose won't start | `.env` missing → `make setup` (or `cp .env.example .env`) |

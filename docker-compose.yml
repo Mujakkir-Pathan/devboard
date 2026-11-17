@@ -22,6 +22,9 @@ services:
     environment:
       PORT: "${BACKEND_PORT}"
       POSTGRES_URL: "postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?sslmode=disable"
+      # No Collector on a laptop — skip tracing entirely instead of logging
+      # export failures every batch. The k8s manifests leave this unset.
+      OTEL_SDK_DISABLED: "true"
     depends_on:
       postgres:
         condition: service_healthy
@@ -45,6 +48,13 @@ services:
       MODEL_API_BASE: "${MODEL_API_BASE:-http://host.docker.internal:11434/v1}"
       MODEL_NAME: "${MODEL_NAME:-llama3.2:1b}"
       MODEL_API_KEY: "${MODEL_API_KEY:-}"
+      # No Collector locally: the default otlp exporter wants the gRPC
+      # package (only the HTTP one is installed) and crashes the OTel
+      # auto-instrumentation with a traceback at startup. The k8s manifests
+      # set otlp + http/protobuf against the real collector instead.
+      OTEL_TRACES_EXPORTER: "none"
+      OTEL_METRICS_EXPORTER: "none"
+      OTEL_LOGS_EXPORTER: "none"
     extra_hosts:
       - "host.docker.internal:host-gateway"   # reach Ollama running on the host
     depends_on:

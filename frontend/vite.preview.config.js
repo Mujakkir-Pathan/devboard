@@ -19,19 +19,35 @@ export default {
       '.elb.amazonaws.com',
     ],
     proxy: {
-      // There is deliberately NO '/api/ai' rule here.
+      // The three paths the Gateway owns as Exact matches (k8s/httproute.yml),
+      // mirrored one-for-one. Locally in compose there is no Gateway in front,
+      // so the UI's same-origin /api/ai/* calls need this door. In the cluster
+      // these keys are shadowed anyway: the HTTPRoute matches ask/summarise/
+      // health first and sends them straight to ai-service, so the frontend
+      // pod never sees them there.
       //
-      // In the cluster the Gateway owns those paths: k8s/httproute.yml matches
-      // /api/ai/summarise, /api/ai/ask and /api/ai/health exactly and sends
-      // them straight to ai-service, so they never reach this container.
-      //
-      // A blanket '/api/ai' prefix rule here would be a SECOND, independent
-      // route into ai-service that bypasses those Exact matches entirely —
+      // Deliberately NOT a blanket '/api/ai' prefix: ai-service also serves
+      // /metrics (app/main.py), and a prefix rule would be a SECOND,
+      // independent route into ai-service that bypasses the Exact matches —
       // which is how /metrics stayed publicly reachable at /api/ai/metrics
-      // even after the HTTPRoute was tightened. Two doors, one lock.
-      //
-      // Anything under /api/ai that the Gateway does not recognise now falls
-      // through to the /api rule below and 404s at the Go backend.
+      // even after the HTTPRoute was tightened. Narrow keys, one lock:
+      // anything else under /api/ai falls through to the /api rule below and
+      // 404s at the Go backend, in the cluster and locally alike.
+      '/api/ai/ask': {
+        target: 'http://ai-service:3005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
+      '/api/ai/summarise': {
+        target: 'http://ai-service:3005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
+      '/api/ai/health': {
+        target: 'http://ai-service:3005',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/ai/, ''),
+      },
       '/api': {
         target: 'http://backend:8080',
         changeOrigin: true,

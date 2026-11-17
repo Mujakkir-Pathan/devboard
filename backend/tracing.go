@@ -18,6 +18,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -35,6 +36,15 @@ import (
 // the API keeps serving traffic, untraced. An observability stack that can
 // cause an outage is worse than no observability stack.
 func initTracing(ctx context.Context) func() {
+	// The standard off switch (OTel spec). compose sets it on a laptop,
+	// where there is no Collector — without this check the exporter is
+	// created anyway and every batch logs a connection-refused error.
+	// The k8s manifests leave it unset, so the cluster keeps tracing.
+	if os.Getenv("OTEL_SDK_DISABLED") == "true" {
+		log.Printf("[backend] tracing disabled via OTEL_SDK_DISABLED")
+		return func() {}
+	}
+
 	// Endpoint, headers and protocol all come from OTEL_EXPORTER_OTLP_*
 	// environment variables. Nothing is hardcoded, so the same binary runs
 	// traced in the cluster and untraced on a laptop.

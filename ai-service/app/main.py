@@ -93,8 +93,12 @@ def _sse(generator):
         except Exception as err:  # noqa: BLE001
             log.exception("stream error: %s", err)
             yield f"data: {json.dumps({'error': str(err)})}\n\n"
-        finally:
-            yield "data: [DONE]\n\n"
+        # Deliberately not in `finally`: when the client disconnects mid-stream
+        # gunicorn throws GeneratorExit at the yield above, and yielding again
+        # here raises "generator ignored GeneratorExit" — which gunicorn then
+        # logs as an application error instead of a silent disconnect. On the
+        # normal and error paths this line still runs.
+        yield "data: [DONE]\n\n"
 
     return Response(
         stream_with_context(stream()),

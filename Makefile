@@ -1,3 +1,9 @@
+# .env holds the host port numbers used by compose; load them for `make smoke`.
+-include .env
+BACKEND_HOST_PORT ?= 8081
+FRONTEND_HOST_PORT ?= 8080
+AI_HOST_PORT ?= 3005
+
 help:
 	@echo ""
 	@echo "DevBoard commands:"
@@ -32,15 +38,15 @@ reset:
 
 smoke:
 	@echo "backend health:"
-	curl -s http://localhost:8081/health
+	curl -s http://localhost:$(BACKEND_HOST_PORT)/health
 	@echo ""
 	@echo "ai-service health:"
-	curl -s http://localhost:3005/health
+	curl -s http://localhost:$(AI_HOST_PORT)/health
 	@echo ""
 	@echo "frontend page:"
-	curl -s -o /dev/null -w "  HTTP %{http_code}\n" http://localhost:8080/
+	curl -s -o /dev/null -w "  HTTP %{http_code}\n" http://localhost:$(FRONTEND_HOST_PORT)/
 	@echo "tasks from the database:"
-	curl -s "http://localhost:8080/api/tasks?project_id=1"
+	curl -s "http://localhost:$(FRONTEND_HOST_PORT)/api/tasks?project_id=1"
 	@echo ""
 
 .PHONY: help setup up down logs ps reset smoke
